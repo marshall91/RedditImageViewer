@@ -34,54 +34,10 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String redditUrl = "https://www.reddit.com/r/aww.json";
-
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, redditUrl, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject jsonObject) {
-                        Log.d(LOGTAG, jsonObject.toString());
-                        addImagesToList(jsonObject);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        Log.e(LOGTAG, volleyError.getMessage());
-                    }
-                });
-
-        VolleySingleton.getInstance().getRequestQueue().add(jsObjRequest);
-
-        List<String> images = new ArrayList<String>();
-        mImageAdapter = new CustomImageAdapter(this, R.layout.list_item_net_image, images);
-        ListView listView = (ListView) findViewById(R.id.listview_image);
-        listView.setAdapter(mImageAdapter);
-    }
-
-    private void addImagesToList(JSONObject jsonObject) {
-        JSONArray items = new JSONArray();
-        try {
-            items = jsonObject.getJSONObject("data").getJSONArray("children");
-            Log.d(LOGTAG, items.toString());
-
-        } catch (JSONException e) {
-            Log.e(LOGTAG, "failed to parse json: " + e.getMessage());
-        }
-
-
-        for (int i = 0; i < items.length(); i++) {
-            try {
-                JSONObject post = items.getJSONObject(i);
-                JSONObject preview = post.getJSONObject("data").getJSONObject("preview");
-                JSONArray images = preview.getJSONArray("images");
-                JSONObject source = images.getJSONObject(0).getJSONObject("source");
-
-                String imgUrl = source.getString("url");
-                mImageAdapter.add(imgUrl);
-            }  catch (JSONException e) {
-                Log.e(LOGTAG, "failed to parse imgUrl: " + e.getMessage());
-            }
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.activity_main_container, new MainFragment())
+                    .commit();
         }
     }
 
