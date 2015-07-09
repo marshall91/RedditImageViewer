@@ -11,11 +11,11 @@ import com.android.volley.toolbox.NetworkImageView;
 import java.util.List;
 
 
-public class CustomImageAdapter extends ArrayAdapter<String> {
-    private List<String> listOfStrings;
+public class CustomImageAdapter extends ArrayAdapter<String[]> {
+    private List<String[]> listOfStrings;
     private LayoutInflater layoutInflater;
 
-    public CustomImageAdapter(Context context, int resource, List<String> objects) {
+    public CustomImageAdapter(Context context, int resource, List<String[]> objects) {
         super(context, resource, objects);
         listOfStrings = objects;
         layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -34,7 +34,7 @@ public class CustomImageAdapter extends ArrayAdapter<String> {
         } else {
             viewHolder = (ViewHolder)convertView.getTag();
         }
-        String imgUrl = getItem(position);
+        String imgUrl = getItem(position)[0];
         viewHolder.netImageView = (NetworkImageView)convertView.findViewById(R.id.list_item_net_imageview);
         viewHolder.netImageView.setImageUrl(imgUrl, VolleySingleton.getInstance().getImageLoader());
 

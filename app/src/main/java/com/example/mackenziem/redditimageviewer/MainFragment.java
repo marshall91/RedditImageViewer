@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -13,6 +14,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.NetworkImageView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,7 +26,7 @@ import java.util.List;
 public class MainFragment extends Fragment {
     private static final String LOGTAG = "MAIN_FRAG";
 
-    private ArrayAdapter<String> mImageAdapter;
+    private ArrayAdapter<String[]> mImageAdapter;
 
     public MainFragment() {}
 
@@ -57,9 +59,22 @@ public class MainFragment extends Fragment {
 
         VolleySingleton.getInstance().getRequestQueue().add(jsObjRequest);
 
-        List<String> images = new ArrayList<String>();
+        List<String[]> images = new ArrayList<String[]>();
         mImageAdapter = new CustomImageAdapter(getActivity(), R.layout.list_item_net_image, images);
         ListView listView = (ListView) rootView.findViewById(R.id.listview_image);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String[] image = mImageAdapter.getItem(position);
+                CommentsFragment fragment = new CommentsFragment();
+                fragment.setCommentUrl(image[1]);
+                fragment.setImgUrl(image[0]);
+                Log.d(LOGTAG, "Click on image: " + image[1]);
+                getActivity().getSupportFragmentManager().beginTransaction().
+                        replace(R.id.activity_main_container, fragment).addToBackStack(null).commit();
+            }
+        });
+
         listView.setAdapter(mImageAdapter);
 
         return rootView;
@@ -84,7 +99,13 @@ public class MainFragment extends Fragment {
                 JSONObject source = images.getJSONObject(0).getJSONObject("source");
 
                 String imgUrl = source.getString("url");
-                mImageAdapter.add(imgUrl);
+
+                String permaLink = post.getJSONObject("data").getString("permalink");
+                String commentsUrl = "http://i.reddit.com" + permaLink;
+
+                String[] obj = {imgUrl, commentsUrl};
+                mImageAdapter.add(obj);
+
             }  catch (JSONException e) {
                 Log.e(LOGTAG, "failed to parse imgUrl: " + e.getMessage());
             }
