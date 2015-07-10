@@ -1,7 +1,7 @@
 package com.example.mackenziem.redditimageviewer;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +14,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.NetworkImageView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -70,8 +69,16 @@ public class MainFragment extends Fragment {
                 fragment.setCommentUrl(image[1]);
                 fragment.setImgUrl(image[0]);
                 Log.d(LOGTAG, "Click on image: " + image[1]);
-                getActivity().getSupportFragmentManager().beginTransaction().
-                        replace(R.id.activity_main_container, fragment).addToBackStack(null).commit();
+                if(getActivity() == null) {
+                    Log.d(LOGTAG, "No activity found");
+                } else {
+                    getActivity().getFragmentManager()
+                            .beginTransaction()
+                            .setCustomAnimations(
+                                    R.animator.card_flip_right_in, R.animator.card_flip_right_out,
+                                    R.animator.card_flip_left_in, R.animator.card_flip_left_out)
+                            .replace(R.id.activity_main_container, fragment).addToBackStack(null).commit();
+                }
             }
         });
 
