@@ -31,6 +31,8 @@ public class CommentsFragment extends Fragment {
         myNetImgView.setImageUrl(imgUrl, VolleySingleton.getInstance().getImageLoader());
 
         WebView myWebView = (WebView) rootView.findViewById(R.id.webview);
+        CustomWebViewClient wvc = new CustomWebViewClient(commentUrl);
+        myWebView.setWebViewClient(wvc);
         myWebView.loadUrl(commentUrl);
 
         return rootView;
